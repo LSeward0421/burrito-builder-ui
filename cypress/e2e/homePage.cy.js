@@ -74,7 +74,7 @@ describe('Home Page', () => {
   });
   
   // As a user, I should not be able to submit an order if I have not entered a name and at least one ingredient is selected. 
-  
+
   it('should not be able to submit an order without a name and at least one ingredient selected', () => {
     cy.get('.order').should('have.length', 2);
     
@@ -87,8 +87,5 @@ describe('Home Page', () => {
     
     cy.get('.order').should('have.length', 2);
   });
-
-
-  
   
 })
