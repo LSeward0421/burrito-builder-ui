@@ -3,13 +3,22 @@ import React, { Component } from 'react';
 class OrderForm extends Component {
   constructor(props) {
     super();
-    this.props = props;
     this.state = {
       name: '',
       ingredients: []
     };
   }
 
+  handleNameChange = e => {
+    this.setState({ name: e.target.value });
+  }
+
+  handleIngredientChange = e => {
+    const ingredient = e.target.name;
+    this.setState(prevState => ({
+      imgredients: [...prevState.ingredients, ingredient]
+    }))
+  }
 
   handleSubmit = e => {
     e.preventDefault();
