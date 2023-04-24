@@ -53,5 +53,42 @@ describe('Home Page', () => {
     cy.get(':nth-child(3) > .ingredient-list > :nth-child(2)').should('contain', 'beans');
     cy.get(':nth-child(3) > .ingredient-list > :nth-child(3)').should('contain', 'queso fresco');
   });
+
+  // As a user, when I refresh the page I should still see my previous orders. 
+
+  it('should maintain submitted orders after page reload', () => {
+    cy.intercept('GET', 'http://localhost:3001/api/v1/orders', { fixture: 'updatedOrders' }).as('updatedOrders');
+    cy.intercept('POST', 'http://localhost:3001/api/v1/orders', { fixture: 'newOrder' }).as('postOrder');
+    cy.get('.order').should('have.length', 2);
+    cy.get('input[name=name]').type('Maggie');
+    cy.get('[name="steak"]').click();
+    cy.get('[name="beans"]').click();
+    cy.get('[name="queso fresco"]').click();
+    cy.get('form > p').contains('Order: steak, beans, queso fresco');
+    cy.get('button').contains('Submit Order').click();
+    cy.wait('@postOrder');
+
+    cy.reload();
+    cy.wait('@updatedOrders');
+    cy.get('.order').should('have.length', 3);
+  });
+  
+  // As a user, I should not be able to submit an order if I have not entered a name and at least one ingredient is selected. 
+  
+  it('should not be able to submit an order without a name and at least one ingredient selected', () => {
+    cy.get('.order').should('have.length', 2);
+    
+    cy.get('[name="steak"]').click();
+    cy.get('[name="beans"]').click();
+    cy.get('[name="queso fresco"]').click();
+    cy.get('form > p').contains('Order: steak, beans, queso fresco');
+    
+    cy.get('button').contains('Submit Order').click();
+    
+    cy.get('.order').should('have.length', 2);
+  });
+
+
+  
   
 })
