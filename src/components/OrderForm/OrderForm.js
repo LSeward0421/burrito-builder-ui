@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 class OrderForm extends Component {
-  constructor(props) {
+  constructor() {
     super();
     this.state = {
       name: '',
@@ -10,19 +10,36 @@ class OrderForm extends Component {
   }
 
   handleNameChange = e => {
+    e.preventDefault();
     this.setState({ name: e.target.value });
   }
 
   handleIngredientChange = e => {
+    e.preventDefault();
     const ingredient = e.target.name;
     this.setState(prevState => ({
-      imgredients: [...prevState.ingredients, ingredient]
+      ingredients: [...prevState.ingredients, ingredient]
     }))
   }
 
   handleSubmit = e => {
     e.preventDefault();
-    this.clearInputs();
+    const { name, ingredients } = this.state;
+    if (name && ingredients.length) {
+      fetch('http://localhost:3001/api/v1/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }, 
+        body: JSON.stringify({ name, ingredients })
+      })
+      .then(response => response.json())
+      .then(data => {
+        this.props.addOrder(data);
+        this.clearInputs();
+      })
+      .catch(err => console.log(`Error:`, err));
+    }
   }
 
   clearInputs = () => {
